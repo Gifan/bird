@@ -44,22 +44,22 @@ private:
 	void setBlinkSprite();
 	void blinkAction();
 	void menuRestartCallback(Ref* pSender);
-	Sprite* blink;
-	Sprite* scoreSprite;
+	Sprite* m_pBlink;
+	Sprite* m_pScoreSprite;
 
-	Sprite* getreadySprite;
+	Sprite* m_pGetreadySprite;
 
-	Sprite* tutorialSprite;
+	Sprite* m_pTutorialSprite;
 
-	Sprite* whiteSprite;
+	Sprite* m_pWhiteSprite;
 
-	int currentScore;
+	int m_iCurrentScore;
 
-	int bestScore;
+	int m_piBestScore;
 
-	int tmpScore;
+	int m_iTmpScore;
 
-	bool isNewRecord;
+	bool m_bIsNewRecord;
 
 	Point originPoint;
 

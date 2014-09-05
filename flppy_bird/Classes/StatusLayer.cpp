@@ -9,9 +9,9 @@ bool StatusLayer::init()
 	{
 		return false;
 	}
-	this->bestScore = 0;
-	this->currentScore = 0;
-	this->isNewRecord = false;
+	this->m_piBestScore = 0;
+	this->m_iCurrentScore = 0;
+	this->m_bIsNewRecord = false;
 	this->visibleSize = Director::getInstance()->getVisibleSize();
 	this->originPoint = Director::getInstance()->getVisibleOrigin();
 	Number::getInstance()->loadNumber(NUMBER_FONT.c_str(), "font_0%02d", 48);
@@ -23,38 +23,38 @@ bool StatusLayer::init()
 
 void StatusLayer::showReadyStatus() 
 {
-	scoreSprite = (Sprite *)Number::getInstance()->convert(NUMBER_FONT.c_str(), 0);
-	scoreSprite->setPosition(Point(this->originPoint.x + this->visibleSize.width / 2,this->originPoint.y + this->visibleSize.height *5/6));
-	this->addChild(scoreSprite);
+	m_pScoreSprite = (Sprite *)Number::getInstance()->convert(NUMBER_FONT.c_str(), 0);
+	m_pScoreSprite->setPosition(Point(this->originPoint.x + this->visibleSize.width / 2,this->originPoint.y + this->visibleSize.height *5/6));
+	this->addChild(m_pScoreSprite);
 
-	getreadySprite = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("text_ready"));
-	getreadySprite->setPosition(Point(this->originPoint.x + this->visibleSize.width / 2.0f, this->originPoint.y + this->visibleSize.height *2/3.0f));
-	this->addChild(getreadySprite);
+	m_pGetreadySprite = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("text_ready"));
+	m_pGetreadySprite->setPosition(Point(this->originPoint.x + this->visibleSize.width / 2.0f, this->originPoint.y + this->visibleSize.height *2/3.0f));
+	this->addChild(m_pGetreadySprite);
 
-	tutorialSprite = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("tutorial"));
-	tutorialSprite->setPosition(Point(this->originPoint.x + this->visibleSize.width / 2, this->originPoint.y + this->visibleSize.height * 1/2.0f));
-	this->addChild(tutorialSprite);
+	m_pTutorialSprite = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("tutorial"));
+	m_pTutorialSprite->setPosition(Point(this->originPoint.x + this->visibleSize.width / 2, this->originPoint.y + this->visibleSize.height * 1/2.0f));
+	this->addChild(m_pTutorialSprite);
 }
 void StatusLayer::showStartStatus() 
 {
-	this->getreadySprite->runAction(FadeOut::create(0.4f));
-	this->tutorialSprite->runAction(FadeOut::create(0.4f));
+	this->m_pGetreadySprite->runAction(FadeOut::create(0.4f));
+	this->m_pTutorialSprite->runAction(FadeOut::create(0.4f));
 }
 
-void StatusLayer::showOverStatus(int curScore, int bestScore) 
+void StatusLayer::showOverStatus(int curScore, int m_piBestScore) 
 {
-	this->currentScore = curScore;
-	this->bestScore = bestScore;
-	if(curScore > bestScore)
+	this->m_iCurrentScore = curScore;
+	this->m_piBestScore = m_piBestScore;
+	if(curScore > m_piBestScore)
 	{
-		this->bestScore = curScore;
-		this->isNewRecord = true;
+		this->m_piBestScore = curScore;
+		this->m_bIsNewRecord = true;
 	}
 	else
 	{
-		this->isNewRecord = false;
+		this->m_bIsNewRecord = false;
 	}
-	this->removeChild(scoreSprite);
+	this->removeChild(m_pScoreSprite);
 	this->blinkFullScreen();
 }
 
@@ -65,24 +65,24 @@ void StatusLayer::onGameStart()
 
 void StatusLayer::onGamePlaying(int score)
 {
-	this->removeChild(scoreSprite);
-	this->scoreSprite = (Sprite* )Number::getInstance()->convert(NUMBER_FONT.c_str(), score);
-	scoreSprite->setPosition(Point(this->originPoint.x + this->visibleSize.width / 2,this->originPoint.y + this->visibleSize.height *5/6));
-	this->addChild(scoreSprite);
+	this->removeChild(m_pScoreSprite);
+	this->m_pScoreSprite = (Sprite* )Number::getInstance()->convert(NUMBER_FONT.c_str(), score);
+	m_pScoreSprite->setPosition(Point(this->originPoint.x + this->visibleSize.width / 2,this->originPoint.y + this->visibleSize.height *5/6));
+	this->addChild(m_pScoreSprite);
 }
 
-void StatusLayer::onGameEnd(int curScore, int bestScore)
+void StatusLayer::onGameEnd(int curScore, int m_piBestScore)
 {
-	this->showOverStatus(curScore,bestScore);
+	this->showOverStatus(curScore,m_piBestScore);
 }
 
 void StatusLayer::loadWhiteSprite()
 {
 	//this white sprite is used for blinking the screen for a short while
-	whiteSprite = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("white"));
-	whiteSprite->setScale(100);
-	whiteSprite->setOpacity(0);
-	this->addChild(whiteSprite,10000);
+	m_pWhiteSprite = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("white"));
+	m_pWhiteSprite->setScale(100);
+	m_pWhiteSprite->setOpacity(0);
+	this->addChild(m_pWhiteSprite,10000);
 }
 
 void StatusLayer::blinkFullScreen()
@@ -93,9 +93,9 @@ void StatusLayer::blinkFullScreen()
 	auto blinkAction = Sequence::create(fadeIn,fadeOut,NULL);
 	CallFunc *actionDone = CallFunc::create(bind(&StatusLayer::fadeInGameOver, this));
 	auto sequence = Sequence::createWithTwoActions(blinkAction, actionDone);
-	whiteSprite->stopAllActions();
-	whiteSprite->runAction(sequence);
-	whiteSprite->setPosition(visibleSize.width/2.0f, visibleSize.height/2.0f);
+	m_pWhiteSprite->stopAllActions();
+	m_pWhiteSprite->runAction(sequence);
+	m_pWhiteSprite->setPosition(visibleSize.width/2.0f, visibleSize.height/2.0f);
 }
 
 void StatusLayer::fadeInGameOver()
@@ -121,25 +121,25 @@ void StatusLayer::jumpToScorePanel()
 	this->addChild(scorepanelSprite);
 
 	//display the  best score on the score panel
-	auto bestScoreSprite = (Sprite *)Number::getInstance()->convert(NUMBER_SCORE.c_str(), this->bestScore, Gravity::GRAVITY_RIGHT);
+	auto bestScoreSprite = (Sprite *)Number::getInstance()->convert(NUMBER_SCORE.c_str(), this->m_piBestScore, Gravity::GRAVITY_RIGHT);
 	bestScoreSprite->setAnchorPoint(Point(1, 1));
 	bestScoreSprite->setPosition(scorepanelSprite->getContentSize().width - 28 ,
 		50);
 	scorepanelSprite->addChild(bestScoreSprite);
 
 
-	string medalsName = this->getMedalsName(currentScore);
+	string medalsName = this->getMedalsName(m_iCurrentScore);
 	if(medalsName != "") 
 	{
 		Sprite* medalsSprite = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName(medalsName));
-		medalsSprite->addChild(this->blink);
+		medalsSprite->addChild(this->m_pBlink);
 		medalsSprite->setPosition(54, 58);
 		scorepanelSprite->addChild(medalsSprite);
 	}
 
 	//if the current score is higher than the best score.
 	//the panel will appear a "new" tag.
-	if(this->isNewRecord)
+	if(this->m_bIsNewRecord)
 	{
 		Sprite* newTagSprite = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("new"));
 		newTagSprite->setPosition(-16, 12);
@@ -190,7 +190,7 @@ void StatusLayer::fadeInRestartBtn()
 
 void StatusLayer::refreshScoreCallback()
 {
-	this->tmpScore = 0;
+	this->m_iTmpScore = 0;
 	schedule(schedule_selector(StatusLayer::refreshScoreExecutor),0.1f);
 }
 
@@ -199,20 +199,20 @@ void StatusLayer::refreshScoreExecutor(float dt)
 	if(this->getChildByTag(CURRENT_SCORE_SPRITE_TAG)){
 		this->removeChildByTag(CURRENT_SCORE_SPRITE_TAG);
 	}
-	scoreSprite = (Sprite *)Number::getInstance()->convert(NUMBER_SCORE.c_str(), this->tmpScore, Gravity::GRAVITY_RIGHT);
-	scoreSprite->setAnchorPoint(Point(1,0));
-	scoreSprite->setPosition(Point(this->originPoint.x + this->visibleSize.width * 3 / 4 + 20.0f, this->originPoint.y + this->visibleSize.height *  1 / 2));
-	scoreSprite->setTag(CURRENT_SCORE_SPRITE_TAG);
-	this->addChild(scoreSprite,1000);
-	this->tmpScore++;
-	if(this->tmpScore > this->currentScore){
+	m_pScoreSprite = (Sprite *)Number::getInstance()->convert(NUMBER_SCORE.c_str(), this->m_iTmpScore, Gravity::GRAVITY_RIGHT);
+	m_pScoreSprite->setAnchorPoint(Point(1,0));
+	m_pScoreSprite->setPosition(Point(this->originPoint.x + this->visibleSize.width * 3 / 4 + 20.0f, this->originPoint.y + this->visibleSize.height *  1 / 2));
+	m_pScoreSprite->setTag(CURRENT_SCORE_SPRITE_TAG);
+	this->addChild(m_pScoreSprite,1000);
+	this->m_iTmpScore++;
+	if(this->m_iTmpScore > this->m_iCurrentScore){
 		unschedule(schedule_selector(StatusLayer::refreshScoreExecutor));
 	}
 }
 
 void StatusLayer::setBlinkSprite() 
 {
-	this->blink = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("blink_00"));
+	this->m_pBlink = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("blink_00"));
 	Animation *animation = Animation::create();
 	animation->setDelayPerUnit(0.1f);
 	for (int i = 0; i < 3; i++)
@@ -230,14 +230,14 @@ void StatusLayer::setBlinkSprite()
 	auto animate = Animate::create(animation);
 	auto actionDone = CallFunc::create(bind(&StatusLayer::blinkAction,this));
 	auto sequence = Sequence::createWithTwoActions(animate, actionDone);
-	blink->runAction(RepeatForever::create(sequence));
+	m_pBlink->runAction(RepeatForever::create(sequence));
 }
 
 void StatusLayer::blinkAction() 
 {
-	if(this->blink && this->blink->getParent()) {
-		Size activeSize = this->blink->getParent()->getContentSize();
-		this->blink->setPosition(rand()%((int)(activeSize.width)), rand()%((int)(activeSize.height)));
+	if(this->m_pBlink && this->m_pBlink->getParent()) {
+		Size activeSize = this->m_pBlink->getParent()->getContentSize();
+		this->m_pBlink->setPosition(rand()%((int)(activeSize.width)), rand()%((int)(activeSize.height)));
 	}
 }
 
@@ -247,13 +247,13 @@ string StatusLayer::getMedalsName(int score)
 
 	//display the golden silver or bronze iron
 	string medalsName = "";
-	if(this->currentScore >=10 && this->currentScore < 20){//iron medals
+	if(this->m_iCurrentScore >=10 && this->m_iCurrentScore < 20){//iron medals
 		medalsName = "medals_0";
-	}else if(this->currentScore >= 20 && currentScore < 30){//bronze medals
+	}else if(this->m_iCurrentScore >= 20 && m_iCurrentScore < 30){//bronze medals
 		medalsName = "medals_1";
-	}else if(currentScore >=30 && currentScore < 50){//silver medals
+	}else if(m_iCurrentScore >=30 && m_iCurrentScore < 50){//silver medals
 		medalsName = "medals_2";
-	}else if(currentScore >=50){//golden medals
+	}else if(m_iCurrentScore >=50){//golden medals
 		medalsName = "medals_3";
 	}
 	return medalsName;

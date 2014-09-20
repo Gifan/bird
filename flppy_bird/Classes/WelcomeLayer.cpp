@@ -10,12 +10,21 @@ bool WelcomeLayer::init()
 		return false;
 	}
 	
-	Size visibleSize = Director::getInstance()->getVisibleSize();
-	Point origin = Director::getInstance()->getVisibleOrigin();
+	this->initBackground();
+	this->initBird();
+	this->initLand();
+
+	this->schedule(schedule_selector(WelcomeLayer::scrollLand), 0.01f);
+
+	return true;
+}
+
+void WelcomeLayer::initBackground()
+{
 	time_t t = time(NULL);
 	tm* pLt = localtime(&t);
 	int hour = pLt->tm_hour;
-	
+
 	Sprite* pBackground;
 	if (hour >= 6 && hour <=17)
 	{
@@ -28,6 +37,12 @@ bool WelcomeLayer::init()
 	pBackground->setAnchorPoint(Point::ZERO);
 	pBackground->setPosition(Point::ZERO);
 	this->addChild(pBackground);
+}
+
+void WelcomeLayer::initBird()
+{
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Point origin = Director::getInstance()->getVisibleOrigin();
 
 	Sprite* pTitle = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("title"));
 	pTitle->setPosition(Point(origin.x + visibleSize.width / 2.0f, origin.y + (visibleSize.height*5)/ 7.0f));
@@ -48,6 +63,13 @@ bool WelcomeLayer::init()
 	this->m_pBird->idle();
 	this->addChild(this->m_pBird);
 
+	Sprite* pCopyright = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("brand_copyright"));
+	pCopyright->setPosition(Point(origin.x + visibleSize.width/2.0f, origin.y + visibleSize.height/6.0f));
+	this->addChild(pCopyright, 10);
+}
+
+void WelcomeLayer::initLand()
+{
 	this->m_pLand1 = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("land"));
 	this->m_pLand1->setAnchorPoint(Point::ZERO);
 	this->m_pLand1->setPosition(Point::ZERO);
@@ -57,13 +79,6 @@ bool WelcomeLayer::init()
 	this->m_pLand2->setAnchorPoint(Point::ZERO);
 	this->m_pLand2->setPosition(this->m_pLand1->getContentSize().width-2.0f, 0);
 	this->addChild(this->m_pLand2);
-
-	this->schedule(schedule_selector(WelcomeLayer::scrollLand), 0.01f);
-
-	Sprite* pCopyright = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("brand_copyright"));
-	pCopyright->setPosition(Point(origin.x + visibleSize.width/2.0f, origin.y + visibleSize.height/6.0f));
-	this->addChild(pCopyright, 10);
-	return true;
 }
 
 void WelcomeLayer::scrollLand(float delta)
@@ -84,4 +99,5 @@ void WelcomeLayer::menuStartCallback(Ref* pSender)
 	auto scene = GameScene::create();
 	TransitionScene* pTransition = TransitionFade::create(1, scene);
 	Director::getInstance()->replaceScene(pTransition);
+
 }

@@ -5,8 +5,10 @@
 #include "time.h"
 #include "cocos2d.h"
 #include "BirdSprite.h"
+#include "cocos-ext.h"
 
 USING_NS_CC;
+USING_NS_CC_EXT;
 using namespace std;
 using namespace CocosDenshion;
 
@@ -18,7 +20,9 @@ public:
 	~WelcomeLayer();
 
 	virtual bool init();
-
+	void initBackground();
+	void initBird();
+	void initLand();
 	CREATE_FUNC(WelcomeLayer);
 private:
 	void menuStartCallback(Ref* pSender);
